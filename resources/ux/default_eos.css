@@ -1,0 +1,440 @@
+.titleStyle {
+    font-size: 34px;
+    line-height: 40px;
+    font-weight: 200;
+    color: #0178DA;
+    width:80%;
+    margin-top:20px;
+}
+
+.subtitle {
+    display: none;
+    font-size: 16px;
+    line-height: 20px;
+    margin-top: 10px;
+    width:80%;
+    font-family:'Segoe UI Semibold'
+}
+
+html[dir='rtl'] #defaultButtonDiv {
+    text-align: left;
+}
+
+html[dir='rtl'] #progressDiv {
+    text-align: right;
+}
+
+button {
+    width: 250px;
+    display: none;
+    cursor: pointer;
+    color:  #FFFFFF;
+    border-width: 2px;
+    border-style: solid;
+    border-color: #0078d7;
+    background-color: #0078d7;
+}
+
+    button:hover {
+        border-color: #83beec;
+    }
+
+    button:disabled {
+        /* IE 8 and earlier */
+        filter: alpha(opacity=20);
+        opacity: 0.2;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+.actionLinkPanel {
+    position: absolute;
+    bottom: 0;
+}
+
+.actionButtonPanel {
+    display: inline-block;
+    width:100%;
+}
+
+.advanceOptionsButton {
+    margin-left: 0px;
+    display: block;
+}
+
+#advanceOptions {
+    display: none;
+    margin-top: 20px;
+}
+
+.blockItemResult {
+    vertical-align: top;
+}
+
+.blockItemImage {
+    width: 18px;
+    height: 18px;
+}
+
+.blockItemContent {
+    width: 880px;
+    overflow: hidden;
+    display: inline-block;
+}
+
+#blockItemInfoCollectionDiv {
+    display: none;
+    margin-top: 45px;
+    width:80%;
+    margin-left:-26px;
+}
+
+#cosqueryWarningInfo {
+    display: none;
+    margin-top: 1em;
+    color: red;
+}
+
+#windows10EULA {
+    display: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 90%; 
+    height: 65%; 
+    position: absolute;
+    color: #FFFFFF; 
+    margin-top: 8px;
+}
+
+#disclaimer, #rebootPageDisclaimer {
+    width: 80%;
+    line-height: 16px;
+}
+
+#rebootPageDisclaimer {
+    display: none;
+    margin-top: 20px;
+}
+
+#vanillaEULA {
+    display: none;
+    position: absolute;
+    bottom: 8%;
+}
+
+#errorText {
+    margin-top: 45px;
+}
+
+#windows10EULABackground {
+    display: none;
+}
+
+#welcomeSection {
+    width: 860px;
+    height: 350px;
+    background-color:  #0078d7;
+    display: none;
+    overflow: hidden;
+}
+
+    #welcomeSection .links {
+        margin-top: 40px;
+    }
+
+    #welcomeSection .link {
+        display: inline-block;
+        margin-right: 20px;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    #welcomeSection .title {
+        margin-top: -40px;
+        color: #FFFFFF;
+    }
+
+#cancelButton {
+    display: inline-block;
+}
+
+.advanceOptionsForm {
+    margin-top: 10px;
+    display: none;
+}
+
+.advanceOptionsInput {
+    vertical-align: middle;
+}
+
+.advanceText {
+    vertical-align: middle;
+}
+
+#targetX64CheckBoxDiv {
+    display: none;
+    font-size: 12px;
+    margin-top: 8px;
+    position: relative;
+    left: 1em;
+}
+
+#targetX64CheckBox {
+    width: 12px;
+}
+
+.advanceOptionSection {
+    height: 25px;
+}
+
+.marketingIcon {
+    width: 30px;
+    margin-bottom: -10px;
+}
+
+
+#upgradeSection {
+    display: none;
+    margin-top: 25px;
+}
+
+#loadingSection {
+    margin: 180px auto auto auto;
+    text-align: center;
+    display: none;
+}
+
+#loadingProgress {
+    margin-top: 20px;
+    color: #FFFFFF;
+}
+
+#downloadCountdownSection {
+    position: absolute;
+    bottom: 75px;
+    display: none;
+    font-size: 15px;
+}
+
+#agreementSectionToUpgrade {
+    display: none;
+}
+
+#agreementSectionToUpgradeLabel {
+    position: absolute;
+    margin-top: 50px; 
+    display: block;
+    font-size: 15px;
+}
+
+#agreementText {
+    float:right;
+    margin-left: 10px; 
+}
+
+#buyNewPCSection {
+    position: absolute;
+    bottom: 0;
+    display: none;
+}
+
+#exitSection, #minimizeSection{
+    position: absolute;
+    bottom: 65px;
+    display: none;
+    font-size: 15px;
+    right:5px;
+}
+
+
+#updateLater {
+    display: none;
+    bottom: 75px; 
+}
+
+
+#errorInfoSection {
+    display: none;
+    margin-top: 45px;
+}
+
+#restartCountdownSection {
+    margin-top: 60px;
+    display: none;
+}
+
+#restartCountdown {
+    font-size: 64px;
+    color: #0178DA;
+    padding-top:20px;
+    font-family: 'Segoe UI Semilight';
+}
+
+#restartCountdownText {
+    font-size: 12px;
+    color: lightgrey;
+}
+
+#header {
+    display: none;
+    vertical-align: middle;
+    position: absolute;
+    top: 20px;
+    right: 35px;
+}
+
+.marketingDiv {
+    margin-top: 45px;
+}
+
+.promotionTable {
+    width: 100%;
+    table-layout: fixed;
+}
+
+    .promotionTable tr {
+        width: 50%;
+    }
+
+    .promotionTable td {
+        vertical-align: top;
+    }
+
+#optionDetails {
+    margin-top: 15px;
+}
+
+#updateNowTip {
+    margin-top: 15px;
+    line-height: 30px;
+    display: none;
+}
+
+
+#logoImage {
+    width: 150px;
+}
+
+#warning { 
+    height:50px;
+    margin-right:20px;
+    margin-bottom:-12px;
+    display:none;
+}
+
+.button_primary { 
+    border-style:none;
+    font-size:12pt;
+    height:50px;
+    width:175px;
+    background-color:#0178DA;
+    vertical-align: middle;
+}
+
+.button_primary:hover{
+    background-color:#004f8f;
+}
+
+#primaryAction1 {
+    margin-left:30px;
+    margin-right:30px;
+}
+
+.secondaryAction {
+    font-size:15px;
+    display:none;
+    background-color:transparent;
+    border-color:transparent;
+    padding-right:30px;
+    padding-left:30px;
+    color:black;
+    vertical-align: middle;
+}
+
+
+#defaultButtonDiv{
+    position:absolute;
+    bottom:30px;
+    width: 900px;
+    bottom: 0;
+    text-align: right;
+}
+
+body { 
+    background-color:white;
+    color:black;
+}
+
+html[dir='rtl'] #lock {
+    right:840px;
+}
+
+#lock {
+    position:absolute;
+    right:40px;
+    top:40px;
+}
+
+.info {
+    padding-top:20px;
+    width:80%
+}
+
+#infoHeader {
+    font-family:'Segoe UI Semibold'
+}
+
+#progressBarContainer {
+    width:100%;
+    background-color:lightgrey;
+    margin-top:15px;
+}
+
+#progressBar {
+    width:0%;
+    height:7px;
+    background-color:#0178DA;
+}
+
+#progressText {
+    display: inline-block;
+    margin-left:40px;
+    margin-right:40px;
+    color:#0178DA;
+    font-size:8pt;
+}
+
+#progressDiv {
+    display: none;
+    bottom:80px;
+    width:100%;
+    padding-top:50px;
+    padding-bottom:10px;
+    text-align:left;
+}
+
+#percentage {
+    font-family: 'Segoe UI Semilight';
+    font-size: 32pt;
+    color: #0178DA;
+}
+
+a:link {
+    color: #0178DA;
+}
+
+#scroll-body {
+    max-height:480px;
+    padding-right:40px;
+    padding-left:40px;
+}
+
+#primaryAction1:hover{
+    background-color: rgba(166, 216, 255, 0.8);
+}
+
+.CompatActionListItem{
+    padding-top:8px;
+}

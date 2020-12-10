@@ -1,0 +1,1161 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Windows 10</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link href="Microsoft.WinJS/css/ui-dark.css" rel="stylesheet">
+    <link href="Microsoft.WinJS/css/oobe-desktop.css" rel="stylesheet">
+    <link href="default_eos.css" rel="stylesheet">
+
+    <script src="Microsoft.WinJS/js/base.js"></script>
+    <script src="Microsoft.WinJS/js/ui.js"></script>
+
+    <script type="text/javascript">
+         var dwRestartCountdownInMin = 30;
+
+         window.onerror = function (message, url, line) {
+            window.open("app:HandleScriptError?message=" + message + "&lineNumber=" + line, "_self");
+            return true;
+         };
+
+         function enableTransparentImgOnIE6(imageElement) {
+             var arVersion = navigator.appVersion.split("MSIE");
+             var version = parseFloat(arVersion[1]);
+             if ((version >= 5.5) && (version < 7) && (document.body.filters)) {
+                 var imgID = (imageElement.id) ? "id='" + imageElement.id + "' " : "";
+                 var imgClass = (imageElement.className) ? "class='" + imageElement.className + "' " : "";
+                 var imgTitle = (imageElement.title) ? "title='" + imageElement.title + "' " : "title='" + imageElement.alt + "' ";
+                 var imgStyle = "display:inline-block;" + imageElement.style.cssText;
+                 var strNewHTML = "<span " + imgID + imgClass + imgTitle
+                     + " style=\"" + imgStyle + ";"
+                     + "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader"
+                     + "(src=\'" + imageElement.src + "\', sizingMethod='scale');\"></span>";
+                 imageElement.outerHTML = strNewHTML;
+             }
+         }
+
+         function launchModernApp(appUserModelId) {
+             window.open("app:LaunchModernApp;AppUserModelId:" + appUserModelId, "_self");
+         }
+
+         function logUserInteraction(userInteractionId) {
+             window.open("app:LogUserInteraction;userInteractionId:" + userInteractionId, "_self");
+         }
+
+         function minimizeApp() {
+             window.open("app:MinimizeToSystemTray", "_self");
+         }
+
+         function createAjaxRequest(method, url) {
+             var request; // The variable that makes Ajax possible!
+
+             try {
+                 // Opera 8.0+, Firefox, Safari
+                 request = new XMLHttpRequest();
+             }
+             catch (e) {
+                 // Internet Explorer Browsers
+                 try {
+                     request = new ActiveXObject("Msxml2.XMLHTTP");
+                 }
+                 catch (e) {
+                     request = new ActiveXObject("Microsoft.XMLHTTP");
+                 }
+             }
+
+             // Append timestamp to the url to avoid both local and server cache
+             url += ((-1 == url.indexOf("?") ? "?" : "&") + "timestamp=" + Number(new Date()));
+
+             request.open(method, url, true);
+
+             return request;
+         }
+
+         var fakeProgressTimer = null;
+
+         var countdownTimer = null;
+         function createTimer(intervalInSeconds, timeoutInSeconds, intervalCallBack, timeoutCallback) {
+             if (timeoutInSeconds <= 0) {
+                 if (intervalCallBack != null) {
+                     intervalCallBack(timeoutInSeconds);
+                 }
+
+                 if (timeoutCallback != null) {
+                     timeoutCallback();
+                 }
+
+                 return;
+             }
+
+             if (intervalCallBack != null) {
+                 intervalCallBack(timeoutInSeconds);
+             }
+
+             clearTimeout(countdownTimer);
+             countdownTimer = setTimeout(function () {
+                 createTimer(intervalInSeconds, timeoutInSeconds - intervalInSeconds, intervalCallBack, timeoutCallback);
+             }, intervalInSeconds * 1000);
+         }
+
+         function formatTime(totalSeconds) {
+             var minutes = Math.floor(totalSeconds / 60);
+             var seconds = totalSeconds - (minutes * 60);
+
+             return minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+         }
+
+         function invokeAppAction(appUrl) {
+             changeButtonState(false);
+             window.open(appUrl, "_self");
+         }
+
+         function startRestartCountdown() {
+             document.getElementById("exitButton").onclick = function () { exitAction(); return false; };
+
+             var restartCountdown = document.getElementById("restartCountdown");
+             createTimer(1, dwRestartCountdownInMin * 60, function (timeLeftInSeconds) {
+                 restartCountdown.innerHTML = formatTime(timeLeftInSeconds);
+             }, function () {
+                 document.getElementById("primaryAction1").click();
+             });
+
+             document.getElementById("restartCountdownSection").style.display = "block";
+         }
+    </script>
+</head>
+<body oncontextmenu="return false;" scroll="no">
+    <div class="control-app">
+        <!-- Center window horizontally and establish min and max widths -->
+        <div class="app-content">
+                <!-- Define page body content region including header and content sections -->
+                <div id="scroll-body" class="page-body">
+                    <div id="header"></div>
+                    <div id="container">
+                        <div class="body-container">
+                            <div class="container-content">
+                                <div id="logo">
+                                    <img src="bluelogo.png" />
+                                </div>
+                                <header class="body-header">
+                                    <div id="title" class="titleStyle"></div>
+                                </header>
+                                <div id="subtitle" class="subtitle">
+                                </div>
+                                <div id="lock">
+                                    <img src="lock.png" />
+                                </div>
+                                <div id="infoDiv">
+                                    <div class="info" id="infoHeader"></div>
+                                    <div class="info" id="infoBody"></div>
+                                    <div class="info" id="infoFooter"></div>
+                                </div>
+                                <div id="blockItemInfoCollectionDiv"></div>
+
+                                <div id="updateNowTip" class="updateNowTip">
+                                </div>
+                                <div id="cosqueryWarningInfo"></div>
+                                <div id="errorInfoSection">
+                                    <div id="errorText"></div>
+                                    <div id="contactQR"></div>
+                                </div>
+                                <div id="rebootPageDisclaimer"></div>
+                                <div id="downloadCountdownSection"></div>
+
+                                <div id="defaultButtonDiv" class="buttonDiv">
+                                    <div id="progressDiv">
+                                        <span id="percentage">0%</span>
+                                        <span id="progressText"></span>
+                                        <div id="progressBarContainer">
+                                            <div id="progressBar"></div>
+                                        </div>
+                                    </div>
+                                    <div class="actionButtonPanel">
+                                        <a class="secondaryAction" id="secondaryAction"></a>
+                                        <a class="secondaryAction" id="exitButton" onclick="exitAction(); return false;"></a>
+                                        <button id="primaryAction2" class="control-button button_primary defaultButton" type="button"></button>
+                                        <button id="primaryAction1" class="control-button button_primary defaultButton" type="button"></button>
+                                    </div>
+                                </div>
+                                <div id="loadingSection" class="control-progress">
+                                    <progress class="win-ring win-large"></progress>
+                                    <div id="loadingProgress"></div>
+                                </div>
+                                <div id="restartCountdownSection">
+                                    <div id="restartCountdownText"></div>
+                                    <div id="restartCountdown"></div>
+                                </div>
+                                <div id="buyNewPCSection"></div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        // for debugging
+        // setTimeout(function() { updateControls(110, "SupportCrossArchUpgrade:true\nRestartWaitingTime:14400\nCompatCheckResult:31\nErrorHRESULT:0xc1900211\nUserReferralID:99\nArchitecture:Amd64\n"); }, 200);
+
+        var exitingAction;
+        var currentState;
+        var properties = new Array();
+
+        var UpgradeState =
+                {
+                    InitializingApplication: 20,
+                    InitializingStates: 30,
+                    CheckingUpgrade: 40,
+                    CheckingCompat: 60,
+                    Downloading: 80,
+                    CompatSuccessResult: 110,
+                    CompatFailedResult: 120,
+                    GeneralErrorResult: 170,
+                    Installing: 180,
+                    ShowingEULA: 190,
+                    WaitForRestartWindows: 220,
+                    WelcomeUserOnWin10: 240,
+                    PushModeWaitingForCancellation: 250,
+                    PushModeInstall: 260,
+                    Uninstall: 290,
+                    ShowingWin10Update: 320
+                };
+
+        var CompatCheckItem =
+                {
+                    DomainNetwork: 0,
+                    ServerOrEnterprise: 1,
+                    Bios: 2,
+                    ProcessorSpeed: 3,
+                    ProcessorNX: 4,
+                    ProcessorArchitecture: 5,
+                    ProcessorCMPXCHG16b: 6,
+                    ProcessorLAHFSAHF: 7,
+                    ProcessorPrefetchW: 8,
+                    Memory: 9,
+                    HardDriveFreeSpace: 10,
+                    NetDevice: 11,
+                    DiskDevice: 12,
+                    DisplayDevice: 13,
+                    CloudCompat: 14,
+                    UEFICompat: 15,
+                    WindowsVersion: 16,
+                    UserDefaultLanguage: 17,
+                    SystemLicensed: 18,
+                    SystemDiskFormat: 19,
+                    CosQueryCheck: 20,
+                    SoundDevice: 21,
+                    ActivePartitionSupport: 22,
+                    SecondaryDriveFreeSpace: 23,
+                    HardDriveFreeSpaceForInstall: 24
+                };
+
+        var errorMap;
+
+        // array of content behavior.
+        // UpgradeState, Title, Subtitle, Progress visibility, Exit link, action button 1, custom action function 1, action button 2, custom action function 2, Custom Function.
+        var controlContent;
+
+        var xpWindowVersionBlockDescription;
+        var compatItemTitleFormat = "<li class='blockItemResult'>{0}</li>";
+        var blockItemDescription;
+        var blockItemInfo;
+        var compatItemsTitle;
+        var compatItemInfo;
+        var compatItemFailInfo;
+        var compatPassInfo;
+
+        Array.prototype.contains = function (obj) {
+            var i = this.length;
+            while (i--) {
+                if (this[i] == obj) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        String.prototype.format = function () {
+            var args = arguments;
+            return this.replace(/{(\d+)}/g, function (match, number) {
+                return typeof args[number] != 'undefined' ? args[number] : match;
+            });
+        };
+
+        var locReady = false;
+
+        function toggleUpdateButton() {
+            if (document.getElementById("agreementCheckBox").checked) {
+                changeButtonState(true);
+            }
+            else {
+                changeButtonState(false);
+            }
+        }
+
+        function locInit() {
+            errorMap = {
+                0x8007000d: [L_v_errorMap_0x8007000d_TEXT],
+                0x80072ee0: [L_v_errorMap_0x80072ee0_TEXT]
+            };
+
+            // UpgradeState, Title, Subtitle, Progress visibility, Exit link, action button 1, custom action function 1, action button 2, custom action function 2, Custom Function.
+            controlContent = [
+                {
+                    "UpgradeState": UpgradeState.InitializingApplication,
+                    "Title": L_v_ctrlContentInitApp_TEXT,
+                    "Subtitle": false,
+                    "ProgressVisibility": false,
+                    "ExitLink": false,
+                    "SecondaryAction": false,
+                    "ActionFunction1": false,
+                    "PrimaryAction": false,
+                    "PrimaryActionFunction": false,
+                    "CustomFunction": false,
+                },
+                {
+                    "UpgradeState": UpgradeState.InitializingStates,
+                    "Title": L_v_ctrlContentInit_TEXT,
+                    "Subtitle": false,
+                    "ProgressVisibility": false,
+                    "ExitLink": false,
+                    "SecondaryAction": false,
+                    "ActionFunction1": false,
+                    "PrimaryAction": false,
+                    "PrimaryActionFunction": false,
+                },
+                {
+                    "UpgradeState": UpgradeState.CheckingUpgrade,
+                    "Title": L_v_ctrlContentCheckUpgradeTitle_TEXT,
+                    "Subtitle": L_v_ctrlContentCheckUpgradeSubtitle_TEXT,
+                    "ProgressVisibility": false,
+                    "ExitLink": false,
+                    "SecondaryAction": false,
+                    "SecondaryActionFunction": false,
+                    "PrimaryAction": false,
+                    "PrimaryActionFunction": false,
+                    "CustomFunction": function () { showLoadingBlock(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.ShowingWin10Update,
+                    "Title": L_v_ctrlContentTitle_Eos_TEXT,
+                    "Subtitle": L_v_ctrlContentSubtitle_Eos_TEXT,
+                    "ProgressVisibility": true,
+                    "ExitLink": L_v_ctrlContentExit_Eos_TEXT,
+                    "SecondaryAction": L_v_ctrlContentMoreInfo_Eos_TEXT,
+                    "SecondaryActionFunction": function () { MoreInfo(); },
+                    "PrimaryAction": L_v_ctrlUpdateNow_Eos_TEXT,
+                    "PrimaryActionFunction": function () { invokeAppAction('app:EULAAccepted'); },
+                    "CustomFunction": function () { showDownloadProgress(L_v_ctrlContentShowWin10UpdateSubtitle_Eos_TEXT); showMeterWarning(); disableProgress(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.CheckingCompat,
+                    "Title": L_v_ctrlContentCheckingCompatTitle_TEXT,
+                    "Subtitle": false,
+                    "ProgressVisibility": false,
+                    "ExitLink": false,
+                    "SecondaryAction": false,
+                    "SecondaryActionFunction": false,
+                    "PrimaryAction": false,
+                    "PrimaryActionFunction": false,
+                    "CustomFunction": function () { showLoadingBlock(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.Downloading,
+                    "Title": L_v_ctrlContentTitle_Eos_TEXT,
+                    "Subtitle": L_v_ctrlContentSubtitle_Eos_TEXT,
+                    "ProgressVisibility": true,
+                    "ExitLink": false,
+                    "SecondaryAction": L_v_ctrlContentMoreInfo_Eos_TEXT,
+                    "SecondaryActionFunction": function () { MoreInfo() },
+                    "PrimaryAction": L_v_ctrlContentMinimize_Eos_TEXT,
+                    "PrimaryActionFunction": function () { minimizeApp(); },
+                    "CustomFunction": function () { showDownloadProgress(L_v_ctrlContentSubtitle_Eos_TEXT); showinfo(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.CompatSuccessResult,
+                    "Title": L_v_ctrlContentCompatSuccessResultTitle_TEXT,
+                    "Subtitle": L_v_ctrlContentCompatSuccessResultSubtitle_TEXT,
+                    "ProgressVisibility": false,
+                    "ExitLink": false,
+                    "SecondaryAction": false,
+                    "SecondaryActionFunction": false,
+                    "PrimaryAction": L_v_ctrlContentCompatSuccessResultAction_TEXT,
+                    "PrimaryActionFunction": function () { invokeAppAction("app:Upgrade"); },
+                    "CustomFunction": function () { showCompatSuccessBlock(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.CompatFailedResult,
+                    "Title": L_v_ctrlContentCompatErrorResultTitle_Eos_TEXT,
+                    "Subtitle": false,
+                    "ProgressVisibility": true,
+                    "ExitLink": false,
+                    "SecondaryAction": L_v_ctrlContentMoreInfo_Eos_TEXT,
+                    "SecondaryActionFunction": function () { MoreInfo(); },
+                    "PrimaryAction": L_v_ok_TEXT,
+                    "PrimaryActionFunction": function () { invokeAppAction('app:Exit;ExitingState:' + UpgradeState.CompatFailedResult + ';ExitingHResult:-2147023673'); },
+                    "CustomFunction": function () { showDownloadProgress(L_v_ctrlContentSubtitle_Eos_TEXT); showBlockItems(); disableProgress(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.GeneralErrorResult,
+                    "Title": L_v_ctrlContentGeneralErrorResultTitle_TEXT,
+                    "Subtitle": L_v_ctrlContentGeneralErrorSubtitle_Eos_TEXT,
+                    "ProgressVisibility": false,
+                    "ExitLink": false,
+                    "SecondaryAction": L_v_ctrlContentMoreInfo_Eos_TEXT,
+                    "SecondaryActionFunction": function () { MoreGeneralErrorInfo(); },
+                    "PrimaryAction": L_v_retry_TEXT,
+                    "PrimaryActionFunction": function () { invokeAppAction('app:Retry'); },
+                    "CustomFunction": function () { showErrorBlock(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.Installing,
+                    "Title": L_v_ctrlContentTitle_Eos_TEXT,
+                    "Subtitle": L_v_ctrlContentSubtitle_Eos_TEXT,
+                    "ProgressVisibility": true,
+                    "ExitLink": false,
+                    "SecondaryAction": L_v_ctrlContentMoreInfo_Eos_TEXT,
+                    "SecondaryActionFunction": function () { MoreInfo(); },
+                    "PrimaryAction": L_v_ctrlContentMinimize_Eos_TEXT,
+                    "PrimaryActionFunction": function () { minimizeApp(); },
+                    "CustomFunction": function () { resetProgress(); updateInstallingPageProgressText(); showinfo(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.WaitForRestartWindows,
+                    "Title": L_v_ctrlContentWaitForRestartWindowsTitle_TEXT,
+                    "Subtitle": false,
+                    "ProgressVisibility": false,
+                    "ExitLink": L_v_ctrlContentExit_Eos_TEXT,
+                    "SecondaryAction": false,
+                    "SecondaryActionFunction": false,
+                    "PrimaryAction": L_v_ctrlContentWaitForRestartWindowsAction_TEXT,
+                    "PrimaryActionFunction": function () { invokeAppAction('app:RestartWindows'); },
+                    "CustomFunction": function () { showWaitForRestartWindowsPage(); },
+                },
+                {
+                    "UpgradeState": UpgradeState.WelcomeUserOnWin10,
+                    "Title": L_v_ctrlContentWelcomeUserOnWin10_TEXT,
+                    "Subtitle": false,
+                    "ProgressVisibility": false,
+                    "ExitLink": false,
+                    "SecondaryAction": false,
+                    "SecondaryActionFunction": false,
+                    "PrimaryAction": L_v_exit_TEXT,
+                    "PrimaryActionFunction": function () { invokeAppAction("app:Exit;ExitingState:" + UpgradeState.WelcomeUserOnWin10 + ";ExitingHResult:0"); },
+                    "CustomFunction": false,
+                }
+            ];
+
+            // blockItem, blockItemIndex, recoverable
+            blockItemInfo =
+            [
+                [CompatCheckItem.DomainNetwork, 3, false],
+                [CompatCheckItem.ServerOrEnterprise, 4, false],
+                [CompatCheckItem.Bios, 5, false],
+                [CompatCheckItem.ProcessorSpeed, 0, false],
+                [CompatCheckItem.ProcessorNX, 0, false],
+                [CompatCheckItem.ProcessorArchitecture, 0, false],
+                [CompatCheckItem.ProcessorCMPXCHG16b, 0, false],
+                [CompatCheckItem.ProcessorLAHFSAHF, 0, false],
+                [CompatCheckItem.ProcessorPrefetchW, 0, false],
+                [CompatCheckItem.Memory, 1, false],
+                [CompatCheckItem.HardDriveFreeSpace, 2, true],
+                [CompatCheckItem.NetDevice, 6, false],
+                [CompatCheckItem.DiskDevice, 7, false],
+                [CompatCheckItem.DisplayDevice, 8, false],
+                [CompatCheckItem.CloudCompat, 9, false],
+                [CompatCheckItem.UEFICompat, 10, false],
+                [CompatCheckItem.WindowsVersion, 4, false],
+                [CompatCheckItem.UserDefaultLanguage, 4, false],
+                [CompatCheckItem.SystemLicensed, 4, true],
+                [CompatCheckItem.SystemDiskFormat, 7, false],
+                [CompatCheckItem.CosQueryCheck, 9, false],
+                [CompatCheckItem.SoundDevice, 11, false],
+                [CompatCheckItem.ActivePartitionSupport, 7, true],
+                [CompatCheckItem.SecondaryDriveFreeSpace, 2, true],
+                [CompatCheckItem.HardDriveFreeSpaceForInstall, 2, true]
+            ];
+
+            compatItemsTitle =
+            [
+                [L_v_compatItemsCpu_TEXT, true],
+                [L_v_compatItemsMem_TEXT, true],
+                [L_v_compatItemsDisk_TEXT, true],
+                [L_v_compatItemsUser_TEXT, false],
+                [L_v_compatItemsOs_TEXT, false],
+                [L_v_compatItemsBios_TEXT, false],
+                [L_v_compatItemsNic_TEXT, false],
+                [L_v_compatItemsDrive_TEXT, false],
+                [L_v_compatItemsDisplay_TEXT, false],
+                [L_v_compatItemsCompat_TEXT, false],
+                [L_v_compatItemsUefi_TEXT, false],
+                [L_v_compatItemsSound_TEXT, false]
+            ];
+
+            compatItemInfo =
+            [
+                "<span class='blockItemDetail'>{0}</span>",
+                "<span id='memoryCheckInfo' class='blockItemDetail'>{0}</span>",
+                "<span id='systemDiskCheckPassInfo' class='blockItemDetail'>{0}</span>",
+                "<span class='blockItemDetail'>{0}</span>",
+                "<span class='blockItemDetail'>{0}</span>",
+                "<span class='blockItemDetail'>{0}</span>",
+                "<span class='blockItemDetail'>{0}</span>",
+                "<span class='blockItemDetail'>{0}</span>",
+                "<span class='blockItemDetail'>{0}</span>",
+                "<span id='cloudCheckInfo' class='blockItemDetail'>{0}</span>",
+                "<span class='blockItemDetail'>{0}</span>",
+                "<span class='blockItemDetail'>{0}</span>"
+            ];
+
+            diskCompatItemFailTwoUserActions = "<ol><li class='CompatActionListItem'>{0}</li><li class='CompatActionListItem'>{1}</li></ol>";
+            diskCompatItemFailOneUserAction = "<ol><li class='CompatActionListItem'>{0}</li></ol>";
+
+            compatItemFailInfo =
+            [
+                "<span class='blockItemFailDetail'>{0}</span>",
+                "<span id='memoryCheckInfo' class='blockItemFailDetail'>{0}</span>",
+                "<span id='systemDiskCheckFailInfo' class='blockItemFailDetail'>{0}</span>",
+                "<span class='blockItemFailDetail'>{0}</span>",
+                "<span class='blockItemFailDetail'>{0}</span>",
+                "<span class='blockItemFailDetail'>{0}</span>",
+                "<span class='blockItemFailDetail'>{0}</span>",
+                "<span class='blockItemFailDetail'>{0}</span>",
+                "<span class='blockItemFailDetail'>{0}</span>",
+                "<span id='cloudCheckInfo' class='blockItemFailDetail'>{0}</span>",
+                "<span class='blockItemFailDetail'>{0}</span>",
+                "<span class='blockItemFailDetail'>{0}</span>"
+            ];
+
+            compatPassInfo =
+            [
+                L_v_compatItemsCpuInfo_TEXT,
+                L_v_compatItemsMemInfo_TEXT,
+                "",
+                L_v_compatItemsUserInfo_TEXT,
+                L_v_compatItemsOsInfo_TEXT,
+                L_v_compatItemsBiosInfo_TEXT,
+                L_v_compatItemsNicInfo_TEXT,
+                L_v_compatItemsDriveInfo_TEXT,
+                L_v_compatItemsDisplayInfo_TEXT,
+                L_v_compatItemsCompatInfo_TEXT,
+                L_v_compatItemsUefiInfo_TEXT,
+                L_v_compatItemsSoundInfo_TEXT
+            ];
+
+            xpWindowVersionBlockDescription = L_v_xpWindowVersionBlockDescription_TEXT;
+            blockItemDescription =
+            [
+                [CompatCheckItem.DomainNetwork, L_v_blockDescDomainNetwork_TEXT],
+                [CompatCheckItem.ServerOrEnterprise, L_v_blockDescServerOrEnterprise_TEXT],
+                [CompatCheckItem.Bios, L_v_blockDescBios_TEXT],
+                [CompatCheckItem.ProcessorSpeed, L_v_blockDescProcessorSpeed_TEXT],
+                [CompatCheckItem.ProcessorNX, L_v_blockDescProcessorNX_TEXT],
+                [CompatCheckItem.ProcessorArchitecture, L_v_blockDescProcessorArchitecture_TEXT],
+                [CompatCheckItem.ProcessorCMPXCHG16b, L_v_blockDescProcessorCMPXCHG16b_TEXT],
+                [CompatCheckItem.ProcessorLAHFSAHF, L_v_blockDescProcessorLAHFSAHF_TEXT],
+                [CompatCheckItem.ProcessorPrefetchW, L_v_blockDescProcessorPrefetchW_TEXT],
+                [CompatCheckItem.Memory, ""],
+                [CompatCheckItem.HardDriveFreeSpace, ""],
+                [CompatCheckItem.NetDevice, L_v_blockDescNetDevice_TEXT],
+                [CompatCheckItem.DiskDevice, L_v_blockDescDiskDevice_TEXT],
+                [CompatCheckItem.DisplayDevice, L_v_blockDescDisplayDevice_TEXT],
+                [CompatCheckItem.CloudCompat, ""],
+                [CompatCheckItem.UEFICompat, L_v_blockDescUEFICompat_TEXT],
+                [CompatCheckItem.WindowsVersion, L_v_blockDescWindowsVersion_TEXT],
+                [CompatCheckItem.UserDefaultLanguage, L_v_blockDescUserDefaultLanguage_TEXT],
+                [CompatCheckItem.SystemLicensed, L_v_blockDescSystemLicensed_TEXT],
+                [CompatCheckItem.SystemDiskFormat, L_v_blockDescSystemDiskFormat_TEXT],
+                [CompatCheckItem.CosQueryCheck, ""],
+                [CompatCheckItem.SoundDevice, L_v_blockDescSoundDevice_TEXT],
+                [CompatCheckItem.ActivePartitionSupport, L_v_blockDescActivePartition_TEXT],
+                [CompatCheckItem.SecondaryDriveFreeSpace, ""],
+                [CompatCheckItem.HardDriveFreeSpaceForInstall, ""]
+            ];
+
+            compatItemTitleFormat = compatItemTitleFormat.format(L_v_compatContentLayout_TEXT);
+
+            locReady = true;
+        }
+
+        function parseProperties(propertyBag) {
+            properties = [];
+
+            var allPropertyPaires = propertyBag.split("\n");
+
+            for (var i = 0; i < allPropertyPaires.length; i++) {
+                if (allPropertyPaires[i].length > 0) {
+                    keyValueSpliter = allPropertyPaires[i].indexOf(":");
+                    key = allPropertyPaires[i].substr(0, keyValueSpliter);
+                    value = allPropertyPaires[i].substr(keyValueSpliter + 1);
+
+                    // unescape string %n to 0x0a. It needs consider a string start with %n
+                    escapedValue = value.replace(/(^|[^%])(%n)/gm, "$1\n");
+                    escapedValue = escapedValue.replace(/%%/gm, "%");
+
+                    properties[key] = escapedValue;
+                }
+            }
+        }
+
+        function showinfo()
+        {
+            document.getElementById("infoHeader").innerHTML = L_v_ctrlContentItemInfoInProgressTitle_Eos_TEXT;
+            document.getElementById("infoBody").innerHTML = L_v_ctrlContentItemInfo_Eos_TEXT;
+            document.getElementById("infoFooter").innerHTML = L_v_ctrlContentItemInfoInProgressFooter_Eos_TEXT;
+
+            document.getElementById("infoDiv").style.display = "block";
+        }
+
+        function resetProgress() {
+            document.getElementById("progressBar").style.width = '0%';
+            document.getElementById("percentage").innerHTML = "0%"
+        }
+
+        function showMeterWarning()
+        {
+            document.getElementById("infoFooter").innerHTML = "";
+            document.getElementById("infoHeader").innerHTML = "";
+            document.getElementById("infoBody").innerHTML = L_v_ctrlContentItemInfoUpdateMeteredFooter_Eos_TEXT;
+
+            document.getElementById("infoDiv").style.display = "block";
+        }
+
+        function showContent(content)
+        {
+            resetUI();
+
+            document.getElementById("title").innerHTML = content.Title;
+
+            if (content.Subtitle) {
+                document.getElementById("subtitle").style.display = "block";
+                document.getElementById("subtitle").innerHTML = content.Subtitle;
+            }
+            else {
+                document.getElementById("subtitle").style.display = "none";
+            }
+
+            if (content.ProgressVisibility) {
+                document.getElementById("progressDiv").style.display = "block";
+                enableProgress();
+            }
+            else {
+                document.getElementById("progressDiv").style.display = "none";
+            }
+
+            if (content.ExitLink) {
+                document.getElementById("exitButton").style.display = "inline-block";
+                document.getElementById("exitButton").innerHTML = content.ExitLink;
+            }
+            else {
+                document.getElementById("exitButton").style.display = "none";
+            }
+
+            var secondaryAction = document.getElementById("secondaryAction");
+            if (content.SecondaryAction) {
+                secondaryAction.innerHTML = content.SecondaryAction;
+                secondaryAction.onclick = content.SecondaryActionFunction;
+                secondaryAction.style.display = "inline-block";
+            }
+            else {
+                secondaryAction.style.display = "none";
+            }
+
+            var primaryAction1 = document.getElementById("primaryAction1");
+            if (content.PrimaryAction) {
+                primaryAction1.innerHTML = content.PrimaryAction;
+                primaryAction1.style.display = "inline-block";
+                primaryAction1.onclick = content.PrimaryActionFunction;
+            }
+            else {
+                primaryAction1.style.display = "none";
+            }
+
+            // There is customized script.
+            if (content.CustomFunction) {
+                content.CustomFunction();
+            }
+        }
+
+        function MoreInfo()
+        {
+            window.open("app:MoreInfo", "_self");
+        }
+
+        function MoreGeneralErrorInfo()
+        {
+            window.open("app:MoreGeneralErrorInfo", "_self");
+        }
+
+        function updateControls(stateId, propertyBag) {
+            clearTimeout(countdownTimer);
+
+            if (stateId == UpgradeState.InitializingStates) {
+                clearTimeout(fakeProgressTimer);
+            }
+
+            if (locReady == false) {
+                setTimeout(function () { updateControls(stateId, propertyBag); }, 200);
+                return;
+            }
+
+            currentState = stateId;
+
+            parseProperties(propertyBag);
+
+            changeButtonState(true);
+
+            showState(stateId);
+        }
+
+        function showState(stateId) {
+            showContent(getStateContent(stateId));
+        }
+
+        function enableProgress()
+        {
+            document.getElementById("percentage").style.color = "#0178DA";
+            document.getElementById("progressText").style.color = "#0178DA";
+        }
+
+        function disableProgress()
+        {
+            document.getElementById("percentage").style.color = "grey";
+            document.getElementById("progressText").style.color = "grey";
+        }
+
+        function resetUI()
+        {
+            document.getElementById("errorInfoSection").style.display = "none";
+            document.getElementById("blockItemInfoCollectionDiv").style.display = "none";
+            document.getElementById("cosqueryWarningInfo").style.display = "none";
+            document.getElementById("header").style.display = "none";
+            document.getElementById("loadingSection").style.display = "none";
+            document.getElementById("downloadCountdownSection").style.display = "none";
+            document.getElementById("restartCountdownSection").style.display = "none";
+            document.getElementById("buyNewPCSection").style.display = "none";
+            document.getElementById("rebootPageDisclaimer").style.display = "none";
+            document.getElementById("updateNowTip").style.display = "none";
+            document.getElementById("progressDiv").style.display = "none";
+            document.getElementById("infoDiv").style.display = "none";
+            document.getElementById("primaryAction2").style.display = "none";
+
+            document.getElementById("logo").style.display = "block";
+            document.getElementById("defaultButtonDiv").style.display = "block";
+        }
+
+        function getStateContent(stateId)
+        {
+            var found = false;
+            var index = 0;
+            for (index = 0; index < controlContent.length; index++) {
+                if (controlContent[index].UpgradeState == stateId) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                throw 'unhanded ui state:' + stateId;
+            }
+
+            var content = controlContent[index];
+
+            return content;
+        }
+
+        function exitAction() {
+            if (currentState == UpgradeState.PushModeWaitingForCancellation ||
+                currentState == UpgradeState.GeneralErrorResult ||
+                currentState == UpgradeState.Downloading ||
+                currentState == UpgradeState.CompatFailedResult ||
+                currentState == UpgradeState.ShowingWin10Update) {
+                exit();
+            }
+            else if (currentState == UpgradeState.WaitForRestartWindows) {
+                document.getElementById("exitButton").onclick = function () { minimizeApp(); return false; };
+
+                clearTimeout(countdownTimer);
+                document.getElementById("restartCountdownSection").style.display = "none";
+
+                window.open("app:RestartLater", "_self");
+            }
+            else {
+                throw "Unknown state: " + currentState;
+            }
+        }
+
+        function exit() {
+            var secondsElapsedSinceEpoch = Math.floor(new Date().getTime() / 1000);
+            exitingAction = "app:Exit;" + "ExitingState:" + currentState + ";ExitingHResult:-2147023673" + ";ExitingTimestamp:" + secondsElapsedSinceEpoch;
+
+            window.open(exitingAction, "_self");
+        }
+
+        function changeButtonState(enabled) {
+            document.getElementById("secondaryAction").disabled = !enabled;
+            document.getElementById("primaryAction1").disabled = !enabled;
+            document.getElementById("primaryAction2").disabled = !enabled;
+        }
+
+        function showCompatSuccessBlock() {
+            if (/Windows NT (5.1|6.0)/.test(navigator.userAgent)) {
+                document.getElementById("subtitle").innerHTML = L_v_subtitleDataOnly_TEXT;
+            }
+
+            var compatibilityText = "";
+            for (var index = 0; index < compatItemsTitle.length; index++) {
+                if (compatItemsTitle[index][1]) {
+                    var compatItemContentColumnDesc = compatItemInfo[index].format(compatPassInfo[index]);
+                    var compatItemContentColumn = compatItemTitleFormat.format(compatItemsTitle[index][0], compatItemContentColumnDesc);
+                    var compatRow = compatFormat.format(compatPassed, compatItemContentColumn);
+
+                    compatibilityText = compatibilityText + compatRow;
+                }
+            }
+            compatibilityText = "<table id='blockItemInfoCollection'>" + compatibilityText + "</table>";
+            document.getElementById("blockItemInfoCollectionDiv").style.display = "block";
+            document.getElementById("blockItemInfoCollectionDiv").innerHTML = compatibilityText;
+
+            var diskInfoPassElement = document.getElementById("systemDiskCheckPassInfo");
+            if ("Architecture" in properties && properties["Architecture"] == "X86") {
+                if (null != diskInfoPassElement) {
+                    diskInfoPassElement.innerHTML = L_v_compatItemsX86DiskInfo_TEXT;
+                }
+            }
+            else {
+                if (null != diskInfoPassElement) {
+                    diskInfoPassElement.innerHTML = L_v_compatItemsAmd64DiskInfo_TEXT;
+                }
+            }
+
+            if ("CosqueryBlockInfo" in properties) {
+                document.getElementById("cosqueryWarningInfo").style.display = "block";
+                document.getElementById("cosqueryWarningInfo").innerHTML = properties["CosqueryBlockInfo"];
+            }
+
+            var downloadCountdownSection = document.getElementById("downloadCountdownSection");
+
+            var primaryAction1 = document.getElementById("primaryAction1");
+            createTimer(1, 10, function (timeLeftInSeconds) {
+                downloadCountdownSection.innerHTML = L_v_downloadCountdown_TEXT + formatTime(timeLeftInSeconds);
+            }, function () {
+                primaryAction1.click();
+            });
+
+            downloadCountdownSection.style.display = "block";
+        }
+
+        function showErrorBlock() {
+            var messageString = "";
+            var errorHRESULT = parseInt(properties["ErrorHRESULT"]);
+
+            var suggestionString = L_v_ctrlGeneralSuggestion_Eos_TEXT.replace("{0}", "javascript:LaunchFAQ()").replace("{1}", "<u>" + properties["ErrorHRESULT"] + "</u>");
+
+            document.getElementById("infoHeader").style.display = "none";
+            document.getElementById("infoBody").innerHTML = L_v_ctrlContentGeneralErrorInfo_Eos_TEXT.replace("{0}","javascript:LaunchSupport()");
+            document.getElementById("infoFooter").innerHTML = suggestionString;
+            document.getElementById("infoDiv").style.display = "block";
+
+            var exitButton = document.getElementById("primaryAction2");
+            exitButton.innerHTML = L_v_ctrlContentMinimize_Eos_TEXT;
+            exitButton.style.display = "inline-block";
+            exitButton.onclick = function () { minimizeApp(); }
+
+            window.open("app:MakeNotTopMost", "_self");
+        }
+
+        function LaunchSupport()
+        {
+            window.open("app:LaunchSupport", "_self");
+        }
+
+        function LaunchFAQ()
+        {
+            window.open("app:LaunchFAQ", "_self");
+        }
+
+        function showBlockItems() {
+            var blockGroupResult = {};
+            var blockGroupMessage = {};
+            var blockIndex = 0;
+            var compatcheckresult = Number(properties["CompatCheckResult"]);
+            var compatibilityText = "";
+            var recoverable = true;
+
+            while (blockIndex < blockItemInfo.length) {
+                var compatibilityIndex = blockItemInfo[blockIndex][1];
+                if (1 == (compatcheckresult % 2)) {
+                    recoverable &= blockItemInfo[blockIndex][2];
+                    blockGroupResult[compatibilityIndex] |= compatcheckresult % 2;
+                }
+                if ("undefined" == typeof (blockGroupMessage[compatibilityIndex]) && 1 == (compatcheckresult % 2)) {
+                    if (CompatCheckItem.WindowsVersion == blockItemInfo[blockIndex][0] && "true" == properties["EnableXPFlag"]) {
+                        blockGroupMessage[compatibilityIndex] = xpWindowVersionBlockDescription;
+                    }
+                    else {
+                        blockGroupMessage[compatibilityIndex] = blockItemDescription[blockIndex][1];
+                    }
+                }
+
+                compatcheckresult >>= 1;
+                blockIndex += 1;
+            }
+
+            var subtitle = document.getElementById("subtitle");
+            subtitle.style.display = "block";
+            var primaryAction1 = document.getElementById("primaryAction1");
+            if (recoverable) {
+                subtitle.innerHTML = L_v_ctrlContentCompatErrorResultHeader_Eos_TEXT;
+
+                primaryAction1.onclick = function () { invokeAppAction('app:Retry'); };
+                primaryAction1.innerHTML = L_v_retry_TEXT;
+                primaryAction1.style.display = "inline-block";
+
+                var exitButton = document.getElementById("primaryAction2");
+                exitButton.onclick = function () { minimizeApp(); }
+                exitButton.innerHTML = L_v_ctrlContentMinimize_Eos_TEXT;
+                exitButton.style.display = "inline-block";
+            } else {
+
+                subtitle.innerHTML = L_v_ctrlContentCompatFailedResultNotRecoverableSubtitle_TEXT;
+                subtitle.style.display = "block";
+
+                primaryAction1.onclick = function () { invokeAppAction("app:Exit;" + "ExitingState:" + UpgradeState.CompatFailedResult + ";ExitingHResult:-2147023673"); };
+                primaryAction1.innerHTML = L_v_ok_TEXT;
+                primaryAction1.style.display = "inline-block";
+            }
+
+            for (var index = 0; index < compatItemsTitle.length; index++) {
+                if (blockGroupResult.hasOwnProperty(index)) {
+                    var compatRow = "";
+                    var compatItemContentColumnDesc = compatItemFailInfo[index].format(blockGroupMessage[index]);
+                    var compatItemContentColumn = compatItemTitleFormat.format(compatItemsTitle[index][0], compatItemContentColumnDesc);
+                    compatRow = compatItemContentColumn;
+                    compatibilityText = compatibilityText + compatRow;
+                }
+            }
+
+            compatibilityText = "<ul id='blockItemInfoCollection'>" + compatibilityText + "</ul>";
+            document.getElementById("blockItemInfoCollectionDiv").style.display = "block";
+            document.getElementById("blockItemInfoCollectionDiv").innerHTML = compatibilityText;
+
+            var memoryInfoElement = document.getElementById("memoryCheckInfo");
+            var diskInfoFailElement = document.getElementById("systemDiskCheckFailInfo");
+            var diskInfoPassElement = document.getElementById("systemDiskCheckPassInfo");
+            var cloudInfoElement = document.getElementById("cloudCheckInfo");
+            if ("Architecture" in properties && properties["Architecture"] == "X86") {
+                if (null != memoryInfoElement && blockGroupResult.hasOwnProperty(1)) {
+                    memoryInfoElement.innerHTML = L_v_mem1G_TEXT;
+                }
+                if (null != diskInfoFailElement && blockGroupResult.hasOwnProperty(2)) {
+                    diskInfoFailElement.innerHTML = diskSpaceCheckFailResultTextX86();
+                }
+                if (null != diskInfoPassElement && !blockGroupResult.hasOwnProperty(2)) {
+                    diskInfoPassElement.innerHTML = L_v_compatItemsX86DiskInfo_TEXT;
+                }
+            }
+            else {
+                if (null != memoryInfoElement && blockGroupResult.hasOwnProperty(1)) {
+                    memoryInfoElement.innerHTML = L_v_mem2G_TEXT;
+                }
+                if (null != diskInfoFailElement && blockGroupResult.hasOwnProperty(2)) {
+                    diskInfoFailElement.innerHTML = diskSpaceCheckFailResultTextAmd64();
+                }
+                if (null != diskInfoPassElement && !blockGroupResult.hasOwnProperty(2)) {
+                    diskInfoPassElement.innerHTML = L_v_compatItemsAmd64DiskInfo_TEXT;
+                }
+            }
+
+            if (null != cloudInfoElement && blockGroupResult.hasOwnProperty(9)) {
+                cloudInfoElement.innerHTML = properties["CloudCompatcheckResult"];
+            }
+        }
+
+        function showLoadingBlock() {
+            document.getElementById("loadingSection").style.display = "block";
+        }
+
+        function showPushModeWaitingForCancellationProgress() {
+            fakePushModeProgress(0, 30, 10 * 60 * 1000 / 30, UpgradeState.PushModeWaitingForCancellation, false);
+        }
+
+        function showPushModeSetupProgress() {
+            fakePushModeProgress(30, 99, 10 * 60 * 1000 / 70, UpgradeState.PushModeInstall, true);
+        }
+
+        function fakePushModeProgress(currentProgress, maxProgress, timeout, upgradeState, timeoutIncrement) {
+            if (currentState != upgradeState) {
+                return;
+            }
+
+            if (currentProgress <= maxProgress) {
+                document.getElementById("percentage").innerHTML = L_progress_TEXT.replace("{0}", currentProgress);
+                document.getElementById("progressBar").style.width = currentProgress + '%';
+
+                var nextProgress = currentProgress + 1;
+                if (timeoutIncrement == true && currentProgress % 2 == 0) {
+                    timeout *= 1.42;
+                }
+                var action = "fakePushModeProgress(" + nextProgress + ", " + maxProgress + ", " + timeout + ", " + upgradeState + ", " + timeoutIncrement + ")";
+                clearTimeout(fakeProgressTimer);
+                fakeProgressTimer = setTimeout(action, timeout);
+            }
+        }
+
+        function updateInstallingPageProgressText() {
+            document.getElementById("progressText").innerHTML = L_v_ctrlContentProgressInstallLabel_Eos_TEXT;
+            if ("FakeInstallProgress" in properties && "true" == properties["FakeInstallProgress"]) {
+                var currentProgress = Number(properties["InstallProgress"]);
+                fakePushModeProgress(currentProgress, 99, 10 * 60 * 1000 / (100 - currentProgress), UpgradeState.Installing, true);
+            }
+            else if ("InstallProgress" in properties) {
+                document.getElementById("percentage").innerHTML = L_progress_TEXT.replace("{0}", properties["InstallProgress"]);
+                document.getElementById("progressBar").style.width = properties["InstallProgress"] + '%';
+            }
+            else {
+                document.getElementById("percentage").innerHTML = L_progress_TEXT.replace("{0}", "0");
+                document.getElementById("progressBar").style.width = '0%';
+            }
+        }
+
+        function isLowDiskSpaceForInstall() {
+            var compatCheckResult = Number(properties["CompatCheckResult"]);
+            return ((compatCheckResult >> CompatCheckItem.HardDriveFreeSpaceForInstall) % 2) == 1;
+        }
+
+        function diskSpaceCheckFailResultTextX86() {
+            var text = "";
+            var boldText = "<b>{0}</b>";
+            var action1 = "<a href='#' onclick=\"sendCommand('app:ShowStorageSenseUI'); return false;\">" + L_v_freeUpDiskSpaceAction1_TEXT + "</a>";
+            var action2 = L_v_freeUpDiskSpaceAction2_TEXT;
+            if (isLowDiskSpaceForInstall()) {
+                text = text + L_v_disk16GOption1_TEXT + "<br>";
+                var actionList = diskCompatItemFailTwoUserActions;
+                text = text + actionList.format(action1, action2);
+            }
+            else {
+                text = text + L_v_disk16GOption2_TEXT + "<br>";
+                var actionList = diskCompatItemFailOneUserAction;
+                text = text + actionList.format(action2);
+            }
+            text = text + "<br>" + boldText.format(L_v_freeUpDiskSpaceNote_TEXT);
+            return text;
+        }
+
+        function diskSpaceCheckFailResultTextAmd64() {
+            var text = "";
+            var boldText = "<b>{0}</b>";
+            var action1 = "<a href='#' onclick=\"sendCommand('app:ShowStorageSenseUI'); return false;\">" + L_v_freeUpDiskSpaceAction1_TEXT + "</a>";
+            var action2 = L_v_freeUpDiskSpaceAction2_TEXT;
+            if (isLowDiskSpaceForInstall()) {
+                text = text + L_v_disk20GOption1_TEXT + "<br>";
+                var actionList = diskCompatItemFailTwoUserActions;
+                text = text + actionList.format(action1, action2);
+            }
+            else {
+                text = text + L_v_disk20GOption2_TEXT + "<br>";
+                var actionList = diskCompatItemFailOneUserAction;
+                text = text + actionList.format(action2);
+            }
+            text = text + "<br>" + boldText.format(L_v_freeUpDiskSpaceNote_TEXT);
+            return text;
+        }
+
+        function showDownloadProgress(defaultMessage) {
+            var messageString = "";
+            if(document.getElementById("progressText").innerHTML != L_v_ctrlContentProgressVerifyLabel_Eos_TEXT)
+            {
+                document.getElementById("progressText").innerHTML = L_v_ctrlContentProgressDownloadLabel_Eos_TEXT;
+            }
+
+            if ("DownloadProgress" in properties) {
+                if ("DownloadState" in properties && properties["DownloadState"]=="3") {
+                    document.getElementById("progressText").innerHTML = L_v_ctrlContentProgressVerifyLabel_Eos_TEXT;
+                } else {
+                    document.getElementById("progressText").innerHTML = L_v_ctrlContentProgressDownloadLabel_Eos_TEXT;
+                }
+                document.getElementById("percentage").innerHTML = L_progress_TEXT.replace("{0}", properties["DownloadProgress"]);
+                document.getElementById("progressBar").style.width = properties["DownloadProgress"] + '%';
+                
+            }else{
+                document.getElementById("percentage").innerHTML = L_progress_TEXT.replace("{0}", "0");
+                document.getElementById("progressBar").style.width = '0%';
+            }
+        }
+
+        function showWaitForRestartWindowsPage() {
+            document.getElementById("rebootPageDisclaimer").style.display = "block";
+
+            startRestartCountdown();
+        }
+
+        function sendCommand(command) {
+            window.open(command, "_self");
+        }
+
+        function replaceImgSrc(imgId, newSrc) {
+            var imgElement = document.getElementById(imgId);
+            if (null != imgElement) {
+                imgElement.setAttribute('src', newSrc);
+            }
+        }
+
+        // localization data
+        window.onload = function () {
+            document.getElementById('title').innerHTML = L_title_TEXT;
+            document.getElementById('rebootPageDisclaimer').innerHTML = L_rebootPageDisclaimer_EOS_TEXT;
+            document.getElementById('loadingProgress').innerHTML = L_loadingProgress_TEXT;
+            document.getElementById('restartCountdownText').innerHTML = L_restartCountdownText_TEXT;
+            document.getElementById('header').innerHTML = "";
+
+            locInit();
+        }
+
+        var f = document.createElement('script');
+        f.src = "res://Windows10UpgraderApp.exe/strings.js";
+        document.getElementsByTagName("head")[0].appendChild(f);
+
+        // Override some strings in win10 to win10 update scenario.
+        var hash = (location.hash).split("_");
+        if (hash[0] == "#win10") {
+            var g = document.createElement('script');
+            g.src = "res://Windows10UpgraderApp.exe/stringswin10.js";
+            document.getElementsByTagName("head")[0].appendChild(g);
+        }
+
+        var h = document.createElement('script');
+        h.src = "res://Windows10UpgraderApp.exe/strings_oobe.js";
+        document.getElementsByTagName("head")[0].appendChild(h);
+
+        var h = document.createElement('script');
+        h.src = "res://Windows10UpgraderApp.exe/strings_eos.js";
+        document.getElementsByTagName("head")[0].appendChild(h);
+
+        var currentLocale = navigator.browserLanguage.toLowerCase();
+        var currentLanguage = currentLocale.split("-");
+
+        if (currentLocale == "zh-cn") {
+            document.body.style.fontFamily = 'Microsoft YaHei';
+        }
+        else if (currentLocale == "zh-tw" || currentLocale == "zh-hk") {
+            document.body.style.fontFamily = 'Microsoft JhengHei UI';
+        }
+        else if (currentLocale == "ja-jp") {
+            document.body.style.fontFamily = '"Meiryo UI", "Yu Gothic UI"';
+        }
+        else if (currentLocale == "ko-kr") {
+            document.body.style.fontFamily = 'Malgun Gothic';
+        }
+        else if (currentLocale == "th-th") {
+            document.body.style.fontFamily = '"Leelawadee UI", Leelawadee';
+        }
+
+        if (currentLanguage[0] == "ar" || currentLanguage[0] == "he") {
+            var htmlNode = document.getElementsByTagName("html")[0];
+            htmlNode.setAttribute("dir", "rtl");
+        }
+    </script>
+</body>
+</html>

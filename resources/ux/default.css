@@ -1,0 +1,375 @@
+﻿body {
+    background-repeat: no-repeat;
+    width: 960px;
+    height: 640px;
+    font-family: 'Segoe UI';
+    font-weight: 300;
+    margin: 0px;
+    overflow: hidden;
+    border: none;
+    font-size: 15px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+    position: relative;
+    color: black;
+}
+
+a {
+    color: #0070c0;
+    text-decoration: none;
+}
+
+#footer {
+    position: absolute;
+    width: 100%;
+    bottom: 15px;
+    z-index: 9999;
+}
+
+.footerLink {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+    .footerLink a {
+        color: gray;
+    }
+
+#logo {
+    display: inline-block;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: -5px;
+}
+
+.container {
+    margin: 45px 50px 60px 50px;
+    height: 515px;
+    position: relative;
+}
+
+.titleStyle {
+    font-size: 34px;
+    font-weight: 200;
+    color: #0070c0;
+}
+
+#progressDiv {
+    display: none;
+    margin-top: 20px;
+}
+
+.subtitle {
+    display: none;
+    line-height: 30px;
+    margin-top: 10px;
+}
+
+#progressText {
+    display: inline-block;
+}
+
+.buttonDiv {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    text-align: right;
+}
+
+html[dir='rtl'] .buttonDiv {
+    text-align: left;
+}
+
+button {
+    width: 250px;
+    height: 40px;
+    display: none;
+    cursor: pointer;
+    color: black;
+    border-width: 2px;
+    border-style: solid;
+    border-color: gray;
+    background-color: white;
+}
+
+    button:hover {
+        background-color: #0070C0;
+    }
+
+    button:disabled {
+        /* IE 8 and earlier */
+        filter: alpha(opacity=20);
+        opacity: 0.2;
+    }
+
+    button:focus {
+        outline: none;
+    }
+
+.actionLinkPanel {
+    position: absolute;
+    bottom: 0;
+}
+
+.actionButtonPanel {
+    display: inline-block;
+}
+
+.advanceOptionsButton {
+    margin-left: 0px;
+    display: block;
+}
+
+#advanceOptions {
+    display: none;
+    margin-top: 20px;
+}
+
+.blockItemResult {
+    width: 25px;
+    vertical-align: top;
+}
+
+.blockItemImage {
+    width: 18px;
+    height: 18px;
+}
+
+.blockItemContent {
+    width: 800px;
+    overflow: hidden;
+    display: inline-block;
+}
+
+#blockItemInfoCollection {
+    table-layout: fixed;
+}
+
+    #blockItemInfoCollection td {
+        word-wrap: break-word;
+    }
+
+#blockItemInfoCollectionDiv {
+    display: none;
+    margin-top: 45px;
+}
+
+#cosqueryWarningInfo {
+    display: none;
+    margin-top: 1em;
+    color: red;
+}
+
+#windows10EULA {
+    display: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    height: 285px;
+    background: transparent;
+    position: absolute;
+    margin-top: 8px;
+}
+
+#disclaimer, #rebootPageDisclaimer {
+    width: 100%;
+    line-height: 16px;
+}
+
+#rebootPageDisclaimer {
+    display: none;
+    margin-top: 20px;
+}
+
+#vanillaEULA {
+    display: none;
+    margin-top: 10px;
+}
+
+#errorText {
+    margin-top: 45px;
+}
+
+#windows10EULABackground {
+    width: 100%;
+    display: none;
+    height: 310px;
+}
+
+#welcomeSection {
+    width: 860px;
+    height: 350px;
+    background-color: transparent;
+    display: none;
+    overflow: hidden;
+}
+
+    #welcomeSection .links {
+        margin-top: 40px;
+    }
+
+    #welcomeSection .link {
+        display: inline-block;
+        margin-right: 20px;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    #welcomeSection .title {
+        margin-top: -40px;
+        color: white;
+    }
+
+#exitWindow {
+    display: none;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+
+#exitConfirmTitle {
+    display: block;
+}
+
+#cancelButton {
+    display: inline-block;
+}
+
+.advanceOptionsForm {
+    margin-top: 10px;
+    display: none;
+}
+
+.advanceOptionsInput {
+    vertical-align: middle;
+}
+
+.advanceText {
+    vertical-align: middle;
+}
+
+#targetX64CheckBoxDiv {
+    display: none;
+    font-size: 12px;
+    margin-top: 8px;
+    position: relative;
+    left: 1em;
+}
+
+#targetX64CheckBox {
+    width: 12px;
+}
+
+.advanceOptionSection {
+    height: 25px;
+}
+
+.marketingIcon {
+    width: 30px;
+    margin-bottom: -10px;
+}
+
+.defaultButton {
+    border-color: #0070C0;
+}
+
+#upgradeSection {
+    display: none;
+    margin-top: 45px;
+}
+
+#loadingSection {
+    margin: 180px auto auto auto;
+    text-align: center;
+    display: none;
+}
+
+#loadingProgress {
+    margin-top: 20px;
+    color: #0070c0;
+}
+
+#downloadCountdownSection {
+    position: absolute;
+    bottom: 0;
+    display: none;
+    font-size: 13px;
+}
+
+#buyNewPCSection {
+    position: absolute;
+    bottom: 0;
+    display: none;
+}
+
+#percentage {
+    font-size: 30px;
+    color: #0070c0;
+}
+
+#errorInfoSection {
+    display: none;
+    margin-top: 45px;
+}
+
+#restartCountdownSection {
+    margin-top: 60px;
+    display: none;
+}
+
+#restartCountdown {
+    font-size: 30px;
+    color: #0070c0;
+}
+
+#header {
+    display: none;
+    vertical-align: middle;
+    position: absolute;
+    top: 20px;
+    right: 35px;
+}
+
+#exitButton {
+    display: none;
+}
+
+.marketingDiv {
+    margin-top: 45px;
+}
+
+.promotionTable {
+    width: 100%;
+    table-layout: fixed;
+}
+
+    .promotionTable tr {
+        margin-top: 10px;
+        width: 50%;
+    }
+
+    .promotionTable td {
+        vertical-align: top;
+    }
+
+#optionDetails {
+    margin-top: 15px;
+}
+
+#updateNowTip {
+    margin-top: 15px;
+    line-height: 30px;
+    display: none;
+}
+
+.CompatActionListItem{
+    padding-top:8px;
+}
