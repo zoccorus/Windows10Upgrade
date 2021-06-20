@@ -329,7 +329,8 @@
                     SoundDevice: 21,
                     ActivePartitionSupport: 22,
                     SecondaryDriveFreeSpace: 23,
-                    HardDriveFreeSpaceForInstall: 24
+                    HardDriveFreeSpaceForInstall: 24,
+                    ProcessorARM: 25
                 };
 
         var errorMap;
@@ -443,7 +444,8 @@
                 [CompatCheckItem.SoundDevice, 11, false],
                 [CompatCheckItem.ActivePartitionSupport, 7, true],
                 [CompatCheckItem.SecondaryDriveFreeSpace, 2, true],
-                [CompatCheckItem.HardDriveFreeSpaceForInstall, 2, true]
+                [CompatCheckItem.HardDriveFreeSpaceForInstall, 2, true],
+                [CompatCheckItem.ProcessorARM, 0, false]
             ];
 
             compatItemsTitle =
@@ -540,7 +542,8 @@
                 [CompatCheckItem.SoundDevice, L_v_blockDescSoundDevice_TEXT],
                 [CompatCheckItem.ActivePartitionSupport, L_v_blockDescActivePartition_TEXT],
                 [CompatCheckItem.SecondaryDriveFreeSpace, ""],
-                [CompatCheckItem.HardDriveFreeSpaceForInstall, ""]
+                [CompatCheckItem.HardDriveFreeSpaceForInstall, ""],
+                [CompatCheckItem.ProcessorARM, L_v_blockDescProcessorARM_TEXT]
             ];
 
             document.getElementById("windows10EULA").src = v_eula;
